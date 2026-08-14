@@ -1,6 +1,6 @@
 {
   "name": "dsh-web-search-brave",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Brave Search-backed WebSearchProvider for the DeepSeek Harness web seam (ctx.web)",
   "keywords": [
     "deepseek-harness",

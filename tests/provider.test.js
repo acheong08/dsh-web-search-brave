@@ -52,3 +52,72 @@ describe("pickPublishedAt", () => {
     expect(pickPublishedAt(null)).toBeUndefined();
   });
 });
+
+import { resolveBaseURL, withTimeout, BraveSearchProvider } from "../lib/index.js";
+
+const braveOptions = (overrides = {}) => ({
+  apiKey: undefined,
+  envKey: "",
+  storeState: { current: false },
+  ...overrides
+});
+
+describe("BraveSearchProvider.available", () => {
+  it("returns false when no key is configured anywhere", () => {
+    const p = new BraveSearchProvider(() => braveOptions(), { current: false });
+    expect(p.available()).toBe(false);
+  });
+
+  it("returns true with a literal config key", () => {
+    const p = new BraveSearchProvider(() => braveOptions({ apiKey: "BSA-key" }), { current: false });
+    expect(p.available()).toBe(true);
+  });
+
+  it("returns true with an environment key", () => {
+    const p = new BraveSearchProvider(() => braveOptions({ envKey: "BSA-key" }), { current: false });
+    expect(p.available()).toBe(true);
+  });
+
+  it("returns true when the credentials store holds the key (sampled at apply)", () => {
+    const p = new BraveSearchProvider(() => braveOptions(), { current: true });
+    expect(p.available()).toBe(true);
+  });
+});
+
+describe("resolveBaseURL (brave)", () => {
+  it("accepts the official endpoint by default", () => {
+    expect(resolveBaseURL(undefined, false)).toBe("https://api.search.brave.com");
+  });
+
+  it("rejects custom baseURL unless explicitly allowed", () => {
+    expect(() => resolveBaseURL("https://evil.example.com", false)).toThrow(/not allowed/);
+  });
+
+  it("rejects non-https custom baseURL even when opted in", () => {
+    expect(() => resolveBaseURL("http://evil.example.com", true)).toThrow(/must use https/);
+  });
+});
+
+describe("brave search timeout enforcement", () => {
+  it("fails with WEB_PROVIDER_ERROR and a timeout message", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (_url, opts) => new Promise((_resolve, reject) => {
+      opts?.signal?.addEventListener("abort", () => {
+        reject(opts.signal.reason ?? new DOMException("Aborted", "AbortError"));
+      });
+    });
+    const provider = new BraveSearchProvider(() => braveOptions({
+      apiKey: "BSA-key",
+      baseURL: "https://api.search.brave.com",
+      count: 5,
+      safesearch: "moderate",
+      textDecorations: false,
+      searchTimeoutMs: 50
+    }), { current: false });
+    try {
+      await expect(provider.search({ query: "x" })).rejects.toMatchObject({ code: "WEB_PROVIDER_ERROR" });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
