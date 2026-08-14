@@ -1,0 +1,11 @@
+# dsh-web-search-brave bundle patch.
+#
+# Mounts the Brave search provider. Brave requires a key (no keyless mode):
+# set BRAVE_API_KEY in the credentials store or the launching environment.
+# Never commit a key.
+
+- insert:
+    - id: web-search-brave
+      name: 'dsh-web-search-brave'
+      config:
+        apiKeyEnv: BRAVE_API_KEY
