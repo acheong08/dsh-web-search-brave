@@ -1,5 +1,12 @@
 # dsh-web-search-brave
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/dsh-web-search-brave"><img src="https://img.shields.io/npm/v/dsh-web-search-brave" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/dsh-web-search-brave"><img src="https://img.shields.io/npm/dm/dsh-web-search-brave" alt="npm downloads"></a>
+  <a href="https://github.com/cnChenKai/dsh-web-search-brave"><img src="https://img.shields.io/github/stars/cnChenKai/dsh-web-search-brave" alt="GitHub stars"></a>
+  <a href="https://github.com/cnChenKai/dsh-web-search-brave/blob/main/LICENSE"><img src="https://img.shields.io/github/license/cnChenKai/dsh-web-search-brave" alt="License"></a>
+</p>
+
 [English](README.md) | [中文](README.zh.md)
 
 基于 [Brave Search](https://api.search.brave.com) 的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 搜索 Provider，让内置的 `web_search` 工具走 Brave 搜索 Web API（`ctx.web` 能力接缝）。
